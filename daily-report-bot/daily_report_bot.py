@@ -26,7 +26,7 @@ current_date = now.strftime("%Y-%m-%d")
 
 
 # Excel filename
-# Do not add .xlsx here because Excel adds it automatically
+# Do NOT include .xlsx because Excel adds it automatically
 excel_filename = f"daily_report_{current_date}"
 
 saved_excel_filename = f"{excel_filename}.xlsx"
@@ -101,11 +101,17 @@ print("Google News opened.")
 
 print("Copying news data...")
 
-pyautogui.hotkey("command", "a")
+pyautogui.hotkey(
+    "command",
+    "a"
+)
 
 time.sleep(1)
 
-pyautogui.hotkey("command", "c")
+pyautogui.hotkey(
+    "command",
+    "c"
+)
 
 time.sleep(2)
 
@@ -154,15 +160,15 @@ for line in lines:
     if line == "":
         continue
 
-    # Skip unwanted text
+    # Skip unwanted menu items
     if line in skip_words:
         continue
 
-    # Skip weather temperatures
+    # Skip temperature values
     if "°" in line:
         continue
 
-    # Skip very short lines
+    # Skip very short text
     if len(line) < 25:
         continue
 
@@ -172,7 +178,7 @@ for line in lines:
 
     items.append(line)
 
-    # Stop after 10 items
+    # Stop after collecting 10 items
     if len(items) == 10:
         break
 
@@ -230,7 +236,7 @@ time.sleep(5)
 
 
 # ============================================================
-# CREATE A NEW BLANK WORKBOOK
+# CREATE NEW BLANK WORKBOOK
 # ============================================================
 
 print("Creating new workbook...")
@@ -258,7 +264,7 @@ excel_rows.append(
 )
 
 
-# Add the 10 news items
+# Add 10 news items
 for item in items:
 
     row = (
@@ -270,7 +276,7 @@ for item in items:
     excel_rows.append(row)
 
 
-# Join everything together
+# Join all rows into one block of text
 excel_data = "\n".join(excel_rows)
 
 
@@ -300,6 +306,32 @@ print("Data pasted successfully.")
 
 
 # ============================================================
+# AUTO-FIT EXCEL COLUMNS
+# ============================================================
+
+print("Auto-fitting Excel columns...")
+
+subprocess.run([
+    "osascript",
+    "-e",
+    '''
+    tell application "Microsoft Excel"
+        activate
+
+        tell active sheet
+            autofit columns of range "A:C"
+        end tell
+
+    end tell
+    '''
+])
+
+time.sleep(3)
+
+print("Excel columns formatted successfully.")
+
+
+# ============================================================
 # SAVE EXCEL FILE
 # ============================================================
 
@@ -316,7 +348,6 @@ time.sleep(4)
 
 # Type filename WITHOUT .xlsx
 # Excel adds the extension automatically
-
 pyautogui.write(
     excel_filename,
     interval=0.05
@@ -328,7 +359,10 @@ pyautogui.press("enter")
 
 time.sleep(5)
 
-print("Excel file saved as:", saved_excel_filename)
+print(
+    "Excel file saved as:",
+    saved_excel_filename
+)
 
 
 # ============================================================
@@ -337,28 +371,33 @@ print("Excel file saved as:", saved_excel_filename)
 
 print("Taking screenshot...")
 
-# Wait until Excel is fully visible after saving
+# Allow Excel to settle after saving
 time.sleep(2)
 
-# Capture the entire screen
+# Capture the full screen
 screenshot = pyautogui.screenshot()
 
-# Save screenshot in the current working directory
+# Save in the directory where the script is being run
 screenshot.save(
     screenshot_filename
 )
 
-print("Screenshot saved as:", screenshot_filename)
+print(
+    "Screenshot saved as:",
+    screenshot_filename
+)
 
 
 # ============================================================
 # FINISHED
 # ============================================================
 
-print("\n--------------------------------")
+print("\n================================")
 print("AUTOMATION COMPLETED")
-print("--------------------------------")
+print("================================")
+
 print("Items collected:", len(items))
 print("Excel file:", saved_excel_filename)
 print("Screenshot:", screenshot_filename)
-print("--------------------------------")
+
+print("================================")
