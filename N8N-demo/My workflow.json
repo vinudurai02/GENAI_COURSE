@@ -1,0 +1,385 @@
+{
+  "name": "My workflow",
+  "nodes": [
+    {
+      "parameters": {
+        "formTitle": "File upload",
+        "formFields": {
+          "values": [
+            {
+              "fieldLabel": "File upload",
+              "fieldType": "file"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.formTrigger",
+      "typeVersion": 2.5,
+      "position": [
+        0,
+        96
+      ],
+      "id": "5c85e0fe-b03e-4598-98c6-2beeebdd0298",
+      "name": "CSV Upload",
+      "webhookId": "8a416a08-e5b3-4413-8adf-866118bd322b",
+      "alwaysOutputData": false,
+      "executeOnce": false,
+      "retryOnFail": false,
+      "notesInFlow": false
+    },
+    {
+      "parameters": {
+        "binaryPropertyName": "File_upload",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.extractFromFile",
+      "typeVersion": 1.1,
+      "position": [
+        224,
+        96
+      ],
+      "id": "5cc26275-5d3a-4817-afb8-0cf90cdbea00",
+      "name": "Extract from File"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Clean this student enrollment row and return ONLY a JSON object.\n\nRow data: {{ JSON.stringify($json) }}\n\nRules:\n- Name: Title Case\n- Email: if invalid (no @ or no .com/.in) set INVALID_EMAIL\n- Phone: if less than 10 digits or empty set MISSING\n- Course: only Python or Machine Learning or Data Science\n- Fee_Paid: yes/YES = true, no/NO = false\n- City: Title Case, empty = UNKNOWN\n- Enrolled_Date: YYYY-MM-DD format\n\nReturn ONLY raw JSON. No explanation. No markdown.",
+        "batching": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.9,
+      "position": [
+        448,
+        96
+      ],
+      "id": "78dc26be-6258-4c44-a504-fa28e939826d",
+      "name": "Basic LLM Chain"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gpt-4.1-mini",
+          "mode": "list",
+          "cachedResultName": "gpt-4.1-mini"
+        },
+        "builtInTools": {},
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.3,
+      "position": [
+        528,
+        320
+      ],
+      "id": "80db76bb-d53f-4837-8072-f473cf742f9b",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "TxTO7qTmHDXLFo0D",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "/*******************************************************\n * PARSE AI JSON RESPONSE\n *******************************************************/\n\nreturn items.map(item => {\n\n  const cleanedData = JSON.parse(item.json.text);\n\n  return {\n    json: cleanedData\n  };\n\n});"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        800,
+        96
+      ],
+      "id": "9b07be8f-a343-4e77-a2fe-35e07b920dbd",
+      "name": "Code in JavaScript"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "fe2471ef-9c27-474d-b867-96460e9e4e9a",
+              "leftValue": "={{ $json.City }}",
+              "rightValue": "Chennai",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        1024,
+        96
+      ],
+      "id": "b14983ac-0f5c-4d01-969e-15549044dd5f",
+      "name": "City = Chennai?"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "71c58fb2-049a-4fd4-bb12-8d7a665f1b2c",
+              "leftValue": "={{ $json.Email }}",
+              "rightValue": "INVALID_EMAIL",
+              "operator": {
+                "type": "string",
+                "operation": "notEquals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        1248,
+        -96
+      ],
+      "id": "e4a8980f-e3aa-49d0-b835-2f999701c20b",
+      "name": "chennai_valid_email ?"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "7ec5f35d-8d1e-4194-8165-9e18fe988b8a",
+              "leftValue": "={{ $json.Email }}",
+              "rightValue": "INVALID_EMAIL",
+              "operator": {
+                "type": "string",
+                "operation": "notEquals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        1248,
+        288
+      ],
+      "id": "2d6b662e-700e-4441-a106-3eb41da8bc8b",
+      "name": "others_valid_email ?"
+    },
+    {
+      "parameters": {
+        "options": {
+          "fileName": "chennai_valid_email.csv"
+        }
+      },
+      "type": "n8n-nodes-base.convertToFile",
+      "typeVersion": 1.1,
+      "position": [
+        1472,
+        -192
+      ],
+      "id": "24e4316b-fbca-45ce-8b3c-4bd621107a3d",
+      "name": "Convert to File"
+    },
+    {
+      "parameters": {
+        "options": {
+          "fileName": "chennai_invalid_email.csv"
+        }
+      },
+      "type": "n8n-nodes-base.convertToFile",
+      "typeVersion": 1.1,
+      "position": [
+        1472,
+        0
+      ],
+      "id": "3fe88a78-8a96-4547-93d8-28c9b368f31f",
+      "name": "Convert to File1"
+    },
+    {
+      "parameters": {
+        "options": {
+          "fileName": "other_valid_email.csv"
+        }
+      },
+      "type": "n8n-nodes-base.convertToFile",
+      "typeVersion": 1.1,
+      "position": [
+        1472,
+        192
+      ],
+      "id": "5d996aae-ce09-4309-bd7d-712b61b0cf2c",
+      "name": "Convert to File2"
+    },
+    {
+      "parameters": {
+        "options": {
+          "fileName": "other_invalid_email.csv"
+        }
+      },
+      "type": "n8n-nodes-base.convertToFile",
+      "typeVersion": 1.1,
+      "position": [
+        1472,
+        384
+      ],
+      "id": "474d86bc-1e8b-4584-b4f9-46c5f9385cbd",
+      "name": "Convert to File3"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "CSV Upload": {
+      "main": [
+        [
+          {
+            "node": "Extract from File",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract from File": {
+      "main": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Basic LLM Chain": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript": {
+      "main": [
+        [
+          {
+            "node": "City = Chennai?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "City = Chennai?": {
+      "main": [
+        [
+          {
+            "node": "chennai_valid_email ?",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "others_valid_email ?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "chennai_valid_email ?": {
+      "main": [
+        [
+          {
+            "node": "Convert to File",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Convert to File1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "others_valid_email ?": {
+      "main": [
+        [
+          {
+            "node": "Convert to File2",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Convert to File3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "796377a7-1fd8-4bf8-a591-71b44fe6de96",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "67dd30073fe26b4ab84b13986f35819b22b257899689ea18aaccb4dcfca0340b"
+  },
+  "id": "wolmSJB9dbkvP38l",
+  "tags": []
+}
