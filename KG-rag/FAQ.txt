@@ -1,0 +1,29 @@
+Q: What is Python?
+A: Python is a high-level, interpreted programming language created by Guido van Rossum in 1991. It is known for its simple and readable syntax.
+
+Q: What is Machine Learning?
+A: Machine Learning is a subset of Artificial Intelligence that allows systems to learn from data and improve from experience without being explicitly programmed.
+
+Q: What is Deep Learning?
+A: Deep Learning is a subset of Machine Learning that uses neural networks with multiple layers to learn complex patterns in large amounts of data.
+
+Q: What is Natural Language Processing?
+A: Natural Language Processing (NLP) is a branch of AI that helps computers understand, interpret, and generate human language. It is used in chatbots, translation, and sentiment analysis.
+
+Q: What is a Knowledge Graph?
+A: A Knowledge Graph is a structured representation of real-world entities and the relationships between them. It stores data as nodes (entities) and edges (relationships) in a graph database.
+
+Q: What is RAG?
+A: RAG stands for Retrieval-Augmented Generation. It is a technique that combines information retrieval with language model generation to produce accurate and grounded answers.
+
+Q: What is Neo4j?
+A: Neo4j is a popular open-source graph database that stores data as nodes, relationships, and properties. It uses the Cypher query language.
+
+Q: What is LangChain?
+A: LangChain is a framework for building applications powered by large language models. It provides tools for chains, agents, memory, and retrieval.
+
+Q: What is an API?
+A: An API (Application Programming Interface) is a set of rules that allows different software applications to communicate with each other.
+
+Q: What is a Vector Database?
+A: A Vector Database stores data as high-dimensional vectors (embeddings). It enables fast similarity search and is commonly used in AI applications for semantic search.
